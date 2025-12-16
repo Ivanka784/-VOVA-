@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мій YouTube Плеєр</title>
-    <style>
+    <title>Завантаження...</title> <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #f0f0f0;
+            justify-content: center;
+            background-color: #121212; /* Темний фон, як у кінотеатрі */
             margin: 0;
             padding: 20px;
-        }
-        h1 {
-            color: #cc0000;
+            height: 100vh;
+            color: white;
         }
         .controls {
             margin-bottom: 20px;
@@ -23,13 +22,19 @@
             gap: 10px;
             width: 100%;
             max-width: 600px;
+            opacity: 0.3; /* Робимо поле вводу менш помітним */
+            transition: opacity 0.3s;
+        }
+        .controls:hover {
+            opacity: 1;
         }
         input {
             flex-grow: 1;
             padding: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid #333;
+            background-color: #222;
+            color: white;
             border-radius: 4px;
-            font-size: 16px;
         }
         button {
             padding: 10px 20px;
@@ -38,21 +43,17 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #990000;
         }
         .video-container {
             position: relative;
             width: 100%;
-            max-width: 800px;
-            padding-bottom: 56.25%; /* Співвідношення сторін 16:9 */
+            max-width: 900px;
+            padding-bottom: 56.25%;
             height: 0;
             background: #000;
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.5);
         }
         iframe {
             position: absolute;
@@ -66,42 +67,47 @@
 </head>
 <body>
 
-    <h1>YouTube Плеєр</h1>
-
-    <div class="controls">
-        <input type="text" id="youtubeLink" placeholder="Вставте посилання на YouTube відео тут...">
-        <button onclick="playVideo()">Дивитись</button>
+    <div class="video-container">
+        <iframe id="playerFrame" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
 
-    <div class="video-container">
-        <iframe id="playerFrame" src="" allowfullscreen></iframe>
+    <br>
+
+    <div class="controls">
+        <input type="text" id="youtubeLink" placeholder="Вставити інше посилання...">
+        <button onclick="playVideo()">Змінити</button>
     </div>
 
     <script>
+        // Секретне посилання на Rick Roll (альтернативна версія)
+        const rickRollID = "xvFZjo5PgG0"; 
+
+        // Запуск при завантаженні сторінки
+        window.onload = function() {
+            playVideoById(rickRollID);
+        };
+
         function playVideo() {
-            // Отримуємо посилання з поля вводу
             var url = document.getElementById('youtubeLink').value;
             var videoId = extractVideoID(url);
-
             if (videoId) {
-                // Формуємо посилання для вбудовування (embed)
-                var embedUrl = "https://www.youtube.com/embed/" + videoId + "?autoplay=1";
-                document.getElementById('playerFrame').src = embedUrl;
+                playVideoById(videoId);
             } else {
-                alert("Будь ласка, введіть правильне посилання на YouTube!");
+                alert("Невірне посилання!");
             }
         }
 
-        // Функція для витягування ID відео з посилання
+        function playVideoById(videoId) {
+            // autoplay=1 запускає відео
+            // rel=0 прибирає рекомендовані відео в кінці
+            var embedUrl = "https://www.youtube.com/embed/" + videoId + "?autoplay=1&rel=0&modestbranding=1";
+            document.getElementById('playerFrame').src = embedUrl;
+        }
+
         function extractVideoID(url) {
             var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
             var match = url.match(regExp);
-
-            if (match && match[2].length == 11) {
-                return match[2];
-            } else {
-                return null;
-            }
+            return (match && match[2].length == 11) ? match[2] : null;
         }
     </script>
 
